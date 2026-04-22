@@ -27,10 +27,17 @@ Use the same names as in `.env.example`. Preview deployments should use a **sepa
 
 ## Build command and migrations
 
-This repo uses `vercel-build` in `package.json` (`prisma generate && prisma migrate deploy && next build`). That requires:
+Vercel runs `vercel-build` (`prisma generate && next build`). **Migrations are not executed during the Vercel build** so deploys stay reliable (Neon poolers and existing non-empty databases often break `migrate deploy` in CI).
 
-- `DATABASE_URL` available at **build time** on Vercel (migrations run during the build).
-- If your host requires a direct connection for DDL, configure `DIRECT_URL` in Prisma and set it in Vercel for builds.
+Apply schema changes to production yourself, from a trusted machine or CI job, **before or after** you deploy app code:
+
+```bash
+npx prisma migrate deploy
+```
+
+Use your production `DATABASE_URL` (on Neon, prefer the **direct** connection string for DDL if the pooler errors). Optional script for local/CI parity with the old behavior: `npm run vercel-build:with-migrate`.
+
+**New environment:** run `npx prisma migrate deploy` once against the empty database, then deploy. **Existing database (P3005):** baseline first — see [prisma-baseline-existing-database.md](./prisma-baseline-existing-database.md).
 
 ## Security checklist
 
@@ -41,13 +48,10 @@ This repo uses `vercel-build` in `package.json` (`prisma generate && prisma migr
 
 ## Verifying after deploy
 
-- Confirm the deployment build log shows `prisma migrate deploy` succeeding.
+- Confirm the build log finishes `next build` without errors.
+- After you change the schema, confirm you ran `npx prisma migrate deploy` against the same database the deployment uses.
 - Hit `/` and a protected route after login to confirm DB connectivity and auth cookies (`Secure` on production).
 
 ## Troubleshooting: P3005 (schema is not empty)
 
-If the build fails with **P3005** during `prisma migrate deploy`, the database already has tables but Prisma has no migration history. You must **baseline** once (mark migrations as applied without running SQL). See [prisma-baseline-existing-database.md](./prisma-baseline-existing-database.md) and run:
-
-`npm run db:baseline:mark-all-applied`
-
-Use the same database URL Vercel uses for production (direct URL recommended on Neon for CLI if the pooler causes issues).
+If **`npx prisma migrate deploy`** (run locally or in CI) fails with **P3005**, the database already has tables but Prisma has no migration history. Baseline once — see [prisma-baseline-existing-database.md](./prisma-baseline-existing-database.md) and run `npm run db:baseline:mark-all-applied` against production (Neon **direct** URL recommended for CLI).

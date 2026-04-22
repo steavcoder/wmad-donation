@@ -22,7 +22,7 @@ That runs `prisma migrate resolve --applied <name>` for each migration **in chro
 ## After baselining
 
 1. Run `npx prisma migrate deploy` locally — it should report everything already applied (or apply only **new** migrations you add later).
-2. Redeploy on Vercel — `vercel-build` should pass.
+2. Redeploy on Vercel — the default `vercel-build` does not run migrations, so the build should pass as long as `next build` succeeds.
 
 ## Alternative: empty database
 
