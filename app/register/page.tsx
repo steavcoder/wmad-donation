@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { BackToHomeLink } from "@/components/back-to-home-link";
+import { FlashBanner } from "@/components/flash-banner";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -12,7 +13,6 @@ export default function RegisterPage() {
   const [profileImageUrl, setProfileImageUrl] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [imageHint, setImageHint] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -47,7 +47,6 @@ export default function RegisterPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
-    setSuccess("");
     setImageHint("");
 
     const res = await fetch("/api/auth/register", {
@@ -70,14 +69,11 @@ export default function RegisterPage() {
       return;
     }
 
-    setSuccess(
-      "Account created. Your status is pending — an admin must approve you before you can log in.",
-    );
-    setName("");
-    setEmail("");
-    setPassword("");
-    setMajor("");
-    setProfileImageUrl("");
+    if (data?.user?.role === "ADMIN") {
+      window.location.href = "/admin";
+      return;
+    }
+    window.location.href = "/dashboard";
   };
 
   return (
@@ -89,8 +85,8 @@ export default function RegisterPage() {
         <p className="text-sm font-medium text-emerald-700">New donor</p>
         <h1 className="mt-1 text-2xl font-bold text-gray-900">Create your account</h1>
         <p className="mt-1 text-sm text-gray-500">
-          Register as a member. After an admin approves your account, you can log in and view your
-          donations.
+          Register as a member and you&apos;ll be signed in automatically to view and manage your
+          donations on your dashboard.
         </p>
 
         <form className="mt-5 space-y-3" onSubmit={handleRegister}>
@@ -163,16 +159,14 @@ export default function RegisterPage() {
         </form>
 
         {error ? (
-          <p className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          <FlashBanner
+            variant="error"
+            onDismiss={() => setError("")}
+            className="mt-3 rounded-lg"
+          >
             {error}
-          </p>
+          </FlashBanner>
         ) : null}
-        {success ? (
-          <p className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-900">
-            {success}
-          </p>
-        ) : null}
-
         <p className="mt-4 text-center text-sm text-neutral-600">
           Already have an account?{" "}
           <Link

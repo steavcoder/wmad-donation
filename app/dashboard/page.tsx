@@ -3,10 +3,12 @@ import { redirect } from "next/navigation";
 import { AuthPayload, verifyToken } from "@/lib/auth";
 import { BackToHomeLink } from "@/components/back-to-home-link";
 import { DashboardProfileSection } from "@/components/dashboard-profile-section";
-import { DonationReceiptCard } from "@/components/donation-receipt-card";
+import { DashboardDonationHistory } from "@/components/dashboard-donation-history";
 import { LogoutButton } from "@/components/logout-button";
+import { DashboardWarmWishes } from "@/components/dashboard-warm-wishes";
 import { MemberDonationRequestForm } from "@/components/member-donation-request-form";
 import { prisma } from "@/lib/prisma";
+import { findWarmWishesForFeed } from "@/lib/warm-wishes-db";
 
 type DashboardUser = {
   id: number;
@@ -14,6 +16,7 @@ type DashboardUser = {
   email: string;
   profileImage: string | null;
   major: string | null;
+  status: "PENDING" | "APPROVED" | "DISABLED";
   donations: Array<{
     id: number;
     amount: number;
@@ -53,14 +56,30 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
+  if (user.status !== "APPROVED") {
+    redirect("/login");
+  }
+
   const approvedDonations = user.donations.filter((donation) => donation.status === "APPROVED");
-  const pendingDonations = user.donations.filter((donation) => donation.status === "PENDING");
 
   const total = approvedDonations.reduce((sum, donation) => sum + donation.amount, 0);
   const donationCount = approvedDonations.length;
   const average = donationCount > 0 ? total / donationCount : 0;
   const trendData = approvedDonations.slice(0, 7).reverse();
   const trendMax = Math.max(...trendData.map((d) => d.amount), 1);
+
+  const warmWishesRaw = await findWarmWishesForFeed(48);
+  const warmWishesInitial = warmWishesRaw.map((w) => ({
+    id: w.id,
+    message: w.message,
+    createdAt: w.createdAt.toISOString(),
+    user: {
+      id: w.user.id,
+      name: w.user.name,
+      major: w.user.major,
+      profileImage: w.user.profileImage,
+    },
+  }));
 
   return (
     <main className="min-h-screen bg-white">
@@ -96,10 +115,13 @@ export default async function DashboardPage() {
       </section>
 
       <DashboardProfileSection
+        initialName={user.name}
         initialMajor={user.major}
         initialProfileImage={user.profileImage}
       />
       <MemberDonationRequestForm />
+
+      <DashboardWarmWishes initialWishes={warmWishesInitial} currentUserId={user.id} />
 
       <section className="mx-auto grid w-full max-w-7xl gap-4 px-6 pb-6 lg:grid-cols-4">
         <article className="rounded-bl-[2.75rem] rounded-tr-2xl bg-emerald-500 p-5 text-white shadow-lg shadow-emerald-500/25">
@@ -137,41 +159,20 @@ export default async function DashboardPage() {
       </section>
 
       <section className="mx-auto w-full max-w-7xl px-6 pb-10">
-        <div className="rounded-bl-[3rem] rounded-tr-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-xl font-semibold text-slate-900">Donation History</h2>
-          <p className="mt-1 text-sm text-slate-500">
-            Approved donations and pending requests.
-          </p>
-          {pendingDonations.length > 0 ? (
-            <div className="mt-4 rounded-bl-2xl rounded-tr-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-              You have {pendingDonations.length} donation request(s) waiting for admin approval.
-            </div>
-          ) : null}
-          <div className="mt-4">
-            {user.donations.length === 0 ? (
-              <p className="text-gray-500">No donations yet.</p>
-            ) : (
-              <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {user.donations.map((donation) => (
-                  <li key={donation.id}>
-                    <DonationReceiptCard
-                      amount={donation.amount}
-                      donorName={user.name}
-                      donorEmail={user.email}
-                      showDonorAvatar={false}
-                      paymentType={donation.paymentType}
-                      accountNumber={donation.accountNumber}
-                      note={donation.note}
-                      createdAt={donation.createdAt}
-                      proofImageUrl={donation.proofImageUrl}
-                      status={donation.status}
-                    />
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </div>
+        <DashboardDonationHistory
+          donations={user.donations.map((d) => ({
+            id: d.id,
+            amount: d.amount,
+            status: d.status,
+            paymentType: d.paymentType,
+            accountNumber: d.accountNumber,
+            proofImageUrl: d.proofImageUrl,
+            note: d.note,
+            createdAt: d.createdAt.toISOString(),
+          }))}
+          userName={user.name}
+          userEmail={user.email}
+        />
       </section>
     </main>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { FlashBanner } from "@/components/flash-banner";
 
 type PaymentType = "CASH" | "BANK_TRANSFER" | "ABA" | "ACLEDA" | "WING" | "OTHER";
 
@@ -88,14 +89,22 @@ export function MemberDonationRequestForm() {
           Submit your donation and admin will approve it before it appears in your history.
         </p>
         {message ? (
-          <p className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+          <FlashBanner
+            variant="success"
+            onDismiss={() => setMessage("")}
+            className="mt-3 rounded-xl"
+          >
             {message}
-          </p>
+          </FlashBanner>
         ) : null}
         {error ? (
-          <p className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          <FlashBanner
+            variant="error"
+            onDismiss={() => setError("")}
+            className="mt-3 rounded-xl"
+          >
             {error}
-          </p>
+          </FlashBanner>
         ) : null}
         <div className="mt-4 rounded-bl-2xl rounded-tr-xl border border-emerald-200 bg-emerald-50/60 p-4">
           <p className="text-sm font-semibold text-emerald-700">Scan payment QR</p>

@@ -1,9 +1,26 @@
 import Link from "next/link";
 import { connection } from "next/server";
 import { Prisma } from "@prisma/client";
+import { WarmWishesGrid } from "@/components/warm-wishes-grid";
 import { prisma } from "@/lib/prisma";
+import { findWarmWishesForFeed } from "@/lib/warm-wishes-db";
 
 export const dynamic = "force-dynamic";
+
+async function getWarmWishesForHome() {
+  const rows = await findWarmWishesForFeed(48);
+  return rows.map((w) => ({
+    id: w.id,
+    message: w.message,
+    createdAt: w.createdAt.toISOString(),
+    user: {
+      id: w.user.id,
+      name: w.user.name,
+      major: w.user.major,
+      profileImage: w.user.profileImage,
+    },
+  }));
+}
 
 async function getDonorMembersForShowcase() {
   return prisma.$queryRaw<
@@ -24,6 +41,7 @@ async function getDonorMembersForShowcase() {
 export default async function Home() {
   await connection();
   const donorMembers = await getDonorMembersForShowcase();
+  const warmWishes = await getWarmWishesForHome();
 
   return (
     <div className="min-h-screen bg-white text-neutral-800">
@@ -63,6 +81,9 @@ export default async function Home() {
             </a>
             <a href="#donors" className="hover:text-emerald-700">
               DONORS
+            </a>
+            <a href="#cheer-wall" className="hover:text-emerald-700">
+              CHEER WALL
             </a>
             <Link href="/login" className="hover:text-emerald-700">
               LOGIN
@@ -143,7 +164,7 @@ export default async function Home() {
               },
               {
                 title: "Member accounts",
-                body: "Register once, get approved, then log in anytime to view your history and profile.",
+                body: "Create an account and jump into your dashboard anytime to view your history and profile.",
                 icon: "https://cdn-icons-png.flaticon.com/512/5455/5455944.png",
               },
               {
@@ -232,6 +253,35 @@ export default async function Home() {
               ))}
             </ul>
           )}
+        </div>
+      </section>
+
+      {/* Member cheer wall — messages of hope for children */}
+      <section
+        id="cheer-wall"
+        className="scroll-mt-24 border-t border-emerald-100/80 bg-gradient-to-b from-emerald-50/40 via-white to-white px-4 py-16 md:px-6 md:py-20"
+      >
+        <div className="mx-auto max-w-6xl">
+          <div className="text-center">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-600">
+              Cheer wall
+            </p>
+            <h2 className="mt-3 font-[family-name:var(--font-display)] text-3xl font-bold text-neutral-900 md:text-4xl">
+              Messages of hope for the kids
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-neutral-600">
+              Our members leave a little love here—emoji, warm words, or both. It&apos;s a small
+              thank-you to the children we support and a fun way to stay connected with the
+              community.
+            </p>
+          </div>
+
+          <div className="mt-12">
+            <WarmWishesGrid
+              wishes={warmWishes}
+              emptyHint="No cheer notes yet. When members post from their dashboard, they’ll show up here for everyone to see."
+            />
+          </div>
         </div>
       </section>
 

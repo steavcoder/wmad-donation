@@ -36,35 +36,24 @@ export default async function AdminPage() {
     redirect("/dashboard");
   }
 
-  const pendingUsers = await prisma.user.findMany({
-    where: { status: "PENDING" },
-    orderBy: { createdAt: "asc" },
-    select: { id: true, name: true, email: true },
-  });
-
-  const memberUsersBase = await prisma.user.findMany({
-    where: { role: "MEMBER", status: "APPROVED" },
+  const memberManagementListRaw = await prisma.user.findMany({
+    where: { role: "MEMBER" },
     orderBy: { createdAt: "desc" },
-    select: { id: true, name: true, email: true },
-  });
-
-  const recentDonationsRaw = await prisma.donation.findMany({
-    where: { status: "APPROVED" },
-    orderBy: { createdAt: "desc" },
-    include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
-      },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      major: true,
+      profileImage: true,
+      status: true,
+      createdAt: true,
     },
   });
 
-  const pendingDonationRequestsRaw = await prisma.donation.findMany({
-    where: { status: "PENDING" },
-    orderBy: { createdAt: "asc" },
+  const memberUsersBase = memberManagementListRaw.filter((m) => m.status === "APPROVED");
+
+  const allDonationsRaw = await prisma.donation.findMany({
+    orderBy: { createdAt: "desc" },
     include: {
       user: {
         select: {
@@ -78,8 +67,7 @@ export default async function AdminPage() {
 
   const profileMap = await loadProfileImagesByUserIds([
     ...memberUsersBase.map((m) => m.id),
-    ...recentDonationsRaw.map((d) => d.userId),
-    ...pendingDonationRequestsRaw.map((d) => d.userId),
+    ...allDonationsRaw.map((d) => d.userId),
   ]);
 
   const memberUsers = memberUsersBase.map((m) => ({
@@ -87,24 +75,10 @@ export default async function AdminPage() {
     profileImage: profileMap.get(m.id) ?? null,
   }));
 
-  const recentDonations = recentDonationsRaw.map((donation) => ({
+  const allDonations = allDonationsRaw.map((donation) => ({
     id: donation.id,
     amount: donation.amount,
-    paymentType: donation.paymentType,
-    accountNumber: donation.accountNumber,
-    proofImageUrl: donation.proofImageUrl,
-    note: donation.note,
-    createdAt: donation.createdAt,
-    user: {
-      name: donation.user.name,
-      email: donation.user.email,
-      profileImage: profileMap.get(donation.userId) ?? null,
-    },
-  }));
-
-  const pendingDonations = pendingDonationRequestsRaw.map((donation) => ({
-    id: donation.id,
-    amount: donation.amount,
+    status: donation.status,
     paymentType: donation.paymentType,
     accountNumber: donation.accountNumber,
     proofImageUrl: donation.proofImageUrl,
@@ -114,7 +88,7 @@ export default async function AdminPage() {
       id: donation.user.id,
       name: donation.user.name,
       email: donation.user.email,
-      profileImage: profileMap.get(donation.user.id) ?? null,
+      profileImage: profileMap.get(donation.userId) ?? null,
     },
   }));
 
@@ -124,7 +98,9 @@ export default async function AdminPage() {
         <div>
           <p className="text-sm text-slate-500">Admin Portal</p>
           <h1 className="text-2xl font-bold text-slate-900">Donation Management</h1>
-          <p className="text-sm text-slate-600">Approve users and record donation entries.</p>
+          <p className="text-sm text-slate-600">
+            Review donation requests, record entries, and manage members.
+          </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <BackToHomeLink />
@@ -132,19 +108,17 @@ export default async function AdminPage() {
         </div>
       </section>
       <AdminWorkspace
-        pendingUsers={pendingUsers}
-        pendingDonations={pendingDonations}
-        memberUsers={memberUsers}
-        recentDonations={recentDonations.map((donation) => ({
-          id: donation.id,
-          amount: donation.amount,
-          paymentType: donation.paymentType,
-          accountNumber: donation.accountNumber,
-          proofImageUrl: donation.proofImageUrl,
-          note: donation.note,
-          createdAt: donation.createdAt.toISOString(),
-          user: donation.user,
+        allDonations={allDonations}
+        memberManagementList={memberManagementListRaw.map((m) => ({
+          id: m.id,
+          name: m.name,
+          email: m.email,
+          major: m.major,
+          profileImage: m.profileImage,
+          status: m.status,
+          createdAt: m.createdAt.toISOString(),
         }))}
+        memberUsers={memberUsers}
       />
     </main>
   );

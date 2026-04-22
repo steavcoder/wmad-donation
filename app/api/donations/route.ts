@@ -11,6 +11,16 @@ export async function GET(req: Request) {
   try {
     const payload = verifyToken(token);
 
+    if (payload.role === "MEMBER") {
+      const member = await prisma.user.findUnique({
+        where: { id: payload.id },
+        select: { status: true },
+      });
+      if (!member || member.status !== "APPROVED") {
+        return Response.json({ error: "Forbidden" }, { status: 403 });
+      }
+    }
+
     const donations = await prisma.donation.findMany({
       where: payload.role === "ADMIN" ? {} : { userId: payload.id },
       include: {
@@ -43,6 +53,17 @@ export async function POST(req: Request) {
 
   if (payload.role !== "MEMBER") {
     return Response.json({ error: "Only members can submit donation requests." }, { status: 403 });
+  }
+
+  const member = await prisma.user.findUnique({
+    where: { id: payload.id },
+    select: { status: true },
+  });
+  if (!member || member.status !== "APPROVED") {
+    return Response.json(
+      { error: "Account is not active. Contact an administrator." },
+      { status: 403 },
+    );
   }
 
   const { amount, note, paymentType, accountNumber, proofImageUrl } = await req.json();

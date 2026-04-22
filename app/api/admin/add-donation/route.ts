@@ -8,14 +8,15 @@ export async function POST(req: Request) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  let payload;
   try {
-    const payload = verifyToken(token);
-
-    if (payload.role !== "ADMIN") {
-      return Response.json({ error: "Forbidden" }, { status: 403 });
-    }
+    payload = verifyToken(token);
   } catch {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (payload.role !== "ADMIN") {
+    return Response.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const { userId, amount, note, paymentType, accountNumber, proofImageUrl } =
@@ -49,6 +50,17 @@ export async function POST(req: Request) {
     return Response.json({ error: "Invalid paymentType" }, { status: 400 });
   }
   const normalizedPaymentType = paymentType as (typeof allowedPaymentTypes)[number];
+
+  const recipient = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, role: true, status: true },
+  });
+  if (!recipient || recipient.role !== "MEMBER" || recipient.status !== "APPROVED") {
+    return Response.json(
+      { error: "Select an approved member to record a donation." },
+      { status: 400 },
+    );
+  }
 
   const donation = await prisma.donation.create({
     data: {

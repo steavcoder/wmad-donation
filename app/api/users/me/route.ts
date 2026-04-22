@@ -15,9 +15,23 @@ export async function PATCH(req: Request) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const me = await prisma.user.findUnique({
+    where: { id: payload.id },
+    select: { status: true },
+  });
+  if (!me || me.status !== "APPROVED") {
+    return Response.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   const body = await req.json();
+  const nameRaw = body?.name;
   const majorRaw = body?.major;
   const profileImageRaw = body?.profileImage;
+
+  if (typeof nameRaw !== "string" || !nameRaw.trim()) {
+    return Response.json({ error: "Name is required." }, { status: 400 });
+  }
+  const name = nameRaw.trim().slice(0, 120);
 
   const major =
     typeof majorRaw === "string" && majorRaw.trim() ? majorRaw.trim() : null;
@@ -29,6 +43,7 @@ export async function PATCH(req: Request) {
   const user = await prisma.user.update({
     where: { id: payload.id },
     data: {
+      name,
       major,
       profileImage,
     },

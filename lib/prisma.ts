@@ -5,8 +5,17 @@ declare global {
   var prisma: PrismaClient | undefined;
 }
 
-export const prisma = global.prisma ?? new PrismaClient();
+/** True when the cached client predates the current schema (e.g. after `prisma generate`). */
+function isStalePrismaClient(client: PrismaClient | undefined): boolean {
+  if (!client) return true;
+  return !("warmWish" in client);
+}
+
+export const prisma: PrismaClient =
+  !isStalePrismaClient(globalThis.prisma) && globalThis.prisma
+    ? globalThis.prisma
+    : new PrismaClient();
 
 if (process.env.NODE_ENV !== "production") {
-  global.prisma = prisma;
+  globalThis.prisma = prisma;
 }

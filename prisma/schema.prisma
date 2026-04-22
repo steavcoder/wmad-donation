@@ -18,6 +18,17 @@ model User {
   status       Status     @default(PENDING)
   createdAt    DateTime   @default(now())
   donations    Donation[]
+  warmWishes   WarmWish[]
+}
+
+model WarmWish {
+  id        Int      @id @default(autoincrement())
+  message   String
+  createdAt DateTime @default(now())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
 }
 
 model Donation {
@@ -41,6 +52,7 @@ enum Role {
 enum Status {
   PENDING
   APPROVED
+  DISABLED
 }
 
 enum PaymentType {

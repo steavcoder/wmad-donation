@@ -14,6 +14,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
+  if (user.status === "DISABLED") {
+    return NextResponse.json(
+      { error: "This account has been disabled. Contact an administrator." },
+      { status: 403 },
+    );
+  }
+
   if (user.status !== "APPROVED") {
     return NextResponse.json({ error: "Not approved yet" }, { status: 403 });
   }

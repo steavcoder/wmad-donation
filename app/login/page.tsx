@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { BackToHomeLink } from "@/components/back-to-home-link";
+import { FlashBanner } from "@/components/flash-banner";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -75,9 +76,13 @@ export default function LoginPage() {
         </div>
 
         {error ? (
-          <p className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          <FlashBanner
+            variant="error"
+            onDismiss={() => setError("")}
+            className="mt-3 rounded-lg"
+          >
             {error}
-          </p>
+          </FlashBanner>
         ) : null}
 
         <p className="mt-4 text-center text-sm text-neutral-600">

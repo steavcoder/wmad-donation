@@ -1,4 +1,6 @@
 import bcrypt from "bcryptjs";
+import { NextResponse } from "next/server";
+import { signToken } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(req: Request) {
@@ -34,6 +36,7 @@ export async function POST(req: Request) {
       password: hashedPassword,
       profileImage,
       major,
+      status: "APPROVED",
     },
     select: {
       id: true,
@@ -46,5 +49,32 @@ export async function POST(req: Request) {
     },
   });
 
-  return Response.json(user, { status: 201 });
+  const token = signToken({
+    id: user.id,
+    role: user.role,
+  });
+
+  const response = NextResponse.json(
+    {
+      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+    },
+    { status: 201 },
+  );
+
+  response.cookies.set("token", token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7,
+  });
+  response.cookies.set("role", user.role, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7,
+  });
+
+  return response;
 }
