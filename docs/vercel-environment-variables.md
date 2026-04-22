@@ -27,7 +27,7 @@ Use the same names as in `.env.example`. Preview deployments should use a **sepa
 
 ## Build command and migrations
 
-Vercel runs `vercel-build` (`prisma generate && next build`). **Migrations are not executed during the Vercel build** so deploys stay reliable (Neon poolers and existing non-empty databases often break `migrate deploy` in CI).
+Vercel uses the default Next.js **build** command (`next build`). `prisma generate` runs in **`postinstall`** after `npm install`. **Migrations are not part of the Vercel build** so deploys stay reliable (Neon poolers and existing non-empty databases often break `migrate deploy` in CI).
 
 Apply schema changes to production yourself, from a trusted machine or CI job, **before or after** you deploy app code:
 
@@ -35,7 +35,7 @@ Apply schema changes to production yourself, from a trusted machine or CI job, *
 npx prisma migrate deploy
 ```
 
-Use your production `DATABASE_URL` (on Neon, prefer the **direct** connection string for DDL if the pooler errors). Optional script for local/CI parity with the old behavior: `npm run vercel-build:with-migrate`.
+Use your production `DATABASE_URL` (on Neon, prefer the **direct** connection string for DDL if the pooler errors). Optional local/CI script that runs migrations then build: `npm run build:with-migrate`.
 
 **New environment:** run `npx prisma migrate deploy` once against the empty database, then deploy. **Existing database (P3005):** baseline first — see [prisma-baseline-existing-database.md](./prisma-baseline-existing-database.md).
 
