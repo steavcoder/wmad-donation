@@ -10,6 +10,7 @@
     "dev:turbo": "env -u CI next dev",
     "build": "prisma generate && next build",
     "db:migrate:deploy": "prisma migrate deploy",
+    "db:baseline:mark-all-applied": "prisma migrate resolve --applied 20260420135929_init_postgres && prisma migrate resolve --applied 20260420145147_add_donation_payment_fields && prisma migrate resolve --applied 20260421021500_add_user_profile_major && prisma migrate resolve --applied 20260421021821_add_user_profile_major && prisma migrate resolve --applied 20260421110000_add_donation_status",
     "vercel-build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start",
     "lint": "eslint",

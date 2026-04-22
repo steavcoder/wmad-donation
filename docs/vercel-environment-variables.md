@@ -43,3 +43,11 @@ This repo uses `vercel-build` in `package.json` (`prisma generate && prisma migr
 
 - Confirm the deployment build log shows `prisma migrate deploy` succeeding.
 - Hit `/` and a protected route after login to confirm DB connectivity and auth cookies (`Secure` on production).
+
+## Troubleshooting: P3005 (schema is not empty)
+
+If the build fails with **P3005** during `prisma migrate deploy`, the database already has tables but Prisma has no migration history. You must **baseline** once (mark migrations as applied without running SQL). See [prisma-baseline-existing-database.md](./prisma-baseline-existing-database.md) and run:
+
+`npm run db:baseline:mark-all-applied`
+
+Use the same database URL Vercel uses for production (direct URL recommended on Neon for CLI if the pooler causes issues).
