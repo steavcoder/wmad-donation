@@ -1,3 +1,5 @@
+import React from "react";
+
 type DonationReceiptCardProps = {
   amount: number;
   donorName: string;
@@ -11,6 +13,7 @@ type DonationReceiptCardProps = {
   note?: string | null;
   createdAt: string | Date;
   proofImageUrl?: string | null;
+  status?: "PENDING" | "APPROVED";
 };
 
 export function DonationReceiptCard({
@@ -24,9 +27,10 @@ export function DonationReceiptCard({
   note,
   createdAt,
   proofImageUrl,
+  status = "APPROVED",
 }: DonationReceiptCardProps) {
   return (
-    <article className="h-[300px] rounded-md border-2 border-gray-300 bg-white p-3 shadow-sm">
+    <article className="h-[300px] rounded-bl-[2.25rem] rounded-tr-xl border border-slate-200 bg-white p-3 shadow-sm">
       <div className="flex h-full flex-col">
         <div className="flex items-center justify-center gap-2 border-b border-gray-200 pb-2">
           {showDonorAvatar ? (
@@ -35,10 +39,10 @@ export function DonationReceiptCard({
               <img
                 src={donorProfileImage}
                 alt=""
-                className="h-10 w-10 shrink-0 rounded-full border border-gray-200 object-cover"
+                className="h-10 w-10 shrink-0 rounded-bl-xl rounded-tr-md border border-slate-200 object-cover"
               />
             ) : (
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-gray-100 text-xs font-semibold text-gray-500">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-bl-xl rounded-tr-md border border-slate-200 bg-gray-100 text-xs font-semibold text-gray-500">
                 {donorName.slice(0, 1).toUpperCase()}
               </div>
             )
@@ -71,6 +75,12 @@ export function DonationReceiptCard({
             {new Date(createdAt).toLocaleDateString()}
           </p>
           <p>
+            <span className="font-semibold">Status:</span>{" "}
+            <span className={status === "APPROVED" ? "text-emerald-700" : "text-amber-700"}>
+              {status}
+            </span>
+          </p>
+          <p>
             <span className="font-semibold">Note:</span> {note?.trim() ? note : "No note"}
           </p>
         </div>
@@ -83,7 +93,7 @@ export function DonationReceiptCard({
                 href={proofImageUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="group relative block h-12 w-12 rounded border border-gray-200 bg-cover bg-center bg-no-repeat"
+                className="group relative block h-12 w-12 rounded-bl-lg rounded-tr-md border border-slate-200 bg-cover bg-center bg-no-repeat"
                 style={{ backgroundImage: `url(${proofImageUrl})` }}
                 title="Hover to preview, click to open"
               >
@@ -95,7 +105,7 @@ export function DonationReceiptCard({
                 </span>
               </a>
             ) : (
-              <div className="h-12 w-12 rounded border border-gray-200 bg-gray-100" />
+              <div className="h-12 w-12 rounded-bl-lg rounded-tr-md border border-slate-200 bg-gray-100" />
             )}
           </div>
           <p className="text-right text-[11px] text-gray-500">

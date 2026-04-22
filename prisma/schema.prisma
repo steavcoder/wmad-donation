@@ -23,6 +23,7 @@ model User {
 model Donation {
   id             Int         @id @default(autoincrement())
   amount         Float
+  status         DonationStatus @default(APPROVED)
   paymentType    PaymentType @default(OTHER)
   accountNumber  String      @default("N/A")
   proofImageUrl  String?
@@ -49,4 +50,9 @@ enum PaymentType {
   ACLEDA
   WING
   OTHER
+}
+
+enum DonationStatus {
+  PENDING
+  APPROVED
 }

@@ -1,3 +1,4 @@
 -- AlterTable
-ALTER TABLE "User" ADD COLUMN     "major" TEXT,
-ADD COLUMN     "profileImage" TEXT;
+ALTER TABLE "User"
+ADD COLUMN IF NOT EXISTS "major" TEXT,
+ADD COLUMN IF NOT EXISTS "profileImage" TEXT;

@@ -45,20 +45,20 @@ export async function POST(req: Request) {
     "OTHER",
   ] as const;
 
-  if (!allowedPaymentTypes.includes(paymentType)) {
+  if (!allowedPaymentTypes.some((type) => type === paymentType)) {
     return Response.json({ error: "Invalid paymentType" }, { status: 400 });
   }
+  const normalizedPaymentType = paymentType as (typeof allowedPaymentTypes)[number];
 
   const donation = await prisma.donation.create({
     data: {
       userId,
       amount,
-      paymentType,
+      status: "APPROVED",
+      paymentType: normalizedPaymentType,
       accountNumber: accountNumber.trim(),
       proofImageUrl:
-        typeof proofImageUrl === "string" && proofImageUrl.trim()
-          ? proofImageUrl.trim()
-          : null,
+        typeof proofImageUrl === "string" && proofImageUrl.trim() ? proofImageUrl.trim() : null,
       note: typeof note === "string" ? note : null,
     },
   });

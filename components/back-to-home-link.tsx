@@ -30,7 +30,7 @@ export function BackToHomeLink({
   return (
     <Link
       href="/"
-      className={`${base} rounded-full border-2 border-neutral-200 bg-white px-4 py-2 text-neutral-800 hover:border-emerald-600 hover:text-emerald-700 ${className}`.trim()}
+      className={`${base} rounded-bl-xl rounded-tr-lg border-2 border-neutral-200 bg-white px-4 py-2 text-neutral-800 hover:border-emerald-600 hover:text-emerald-700 ${className}`.trim()}
     >
       <span aria-hidden className="text-base leading-none">
         ←

@@ -51,26 +51,26 @@ export default async function Home() {
               ♥
             </span>
             <span className="font-[family-name:var(--font-display)] text-xl tracking-tight">
-              WMAD Donate
+              WMAD DONATE
             </span>
           </Link>
           <nav className="hidden items-center gap-8 text-sm font-medium text-neutral-600 md:flex">
             <Link href="/" className="hover:text-emerald-700">
-              Home
+              HOME
             </Link>
             <a href="#causes" className="hover:text-emerald-700">
-              Causes
+              CAUSES
             </a>
             <a href="#donors" className="hover:text-emerald-700">
-              Donors
+              DONORS
             </a>
             <Link href="/login" className="hover:text-emerald-700">
-              Login
+              LOGIN
             </Link>
           </nav>
           <Link
             href="/register"
-            className="rounded-full border-2 border-neutral-200 px-4 py-2 text-sm font-semibold text-neutral-800 transition hover:border-emerald-600 hover:text-emerald-700"
+            className="rounded-bl-xl rounded-tr-lg border-2 border-neutral-200 px-4 py-2 text-sm font-semibold text-neutral-800 transition hover:border-emerald-600 hover:text-emerald-700"
           >
             Make a Donate
           </Link>
@@ -87,7 +87,7 @@ export default async function Home() {
             </p>
             <h1 className="mt-4 max-w-xl font-[family-name:var(--font-display)] text-4xl font-bold leading-[1.15] text-slate-900 md:text-5xl lg:text-[3.35rem]">
               Help The Children When They Need.
-            </h1>
+          </h1>
             <p className="mt-5 max-w-lg text-sm leading-7 text-slate-500 md:text-base">
               The world calls for acts from us, simplicity of life, the spirit of prayer,
               charity towards all, especially towards the lowly and the poor.
@@ -95,13 +95,13 @@ export default async function Home() {
             <div className="mt-8 flex flex-wrap gap-4">
               <Link
                 href="/register"
-                className="inline-flex items-center justify-center rounded-full border border-emerald-500 bg-emerald-500 px-7 py-3 text-sm font-semibold text-white transition duration-300 hover:-translate-y-0.5 hover:bg-emerald-600 hover:shadow-lg hover:shadow-emerald-400/30"
+                className="inline-flex items-center justify-center rounded-bl-xl rounded-tr-lg border border-emerald-500 bg-emerald-500 px-7 py-3 text-sm font-semibold text-white transition duration-300 hover:-translate-y-0.5 hover:bg-emerald-600 hover:shadow-lg hover:shadow-emerald-400/30"
               >
                 Donate now
               </Link>
               <Link
                 href="/login"
-                className="inline-flex items-center justify-center rounded-full border border-emerald-200 bg-white px-7 py-3 text-sm font-semibold text-slate-600 transition duration-300 hover:-translate-y-0.5 hover:border-emerald-500 hover:text-emerald-700 hover:shadow-lg hover:shadow-emerald-100"
+                className="inline-flex items-center justify-center rounded-bl-xl rounded-tr-lg border border-emerald-200 bg-white px-7 py-3 text-sm font-semibold text-slate-600 transition duration-300 hover:-translate-y-0.5 hover:border-emerald-500 hover:text-emerald-700 hover:shadow-lg hover:shadow-emerald-100"
               >
                 Learn more →
               </Link>
@@ -112,7 +112,7 @@ export default async function Home() {
             <div className="relative ml-auto aspect-[5/4] w-full max-w-[36rem] overflow-hidden rounded-bl-[9rem] rounded-tr-[1.5rem] bg-neutral-200 shadow-xl">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80"
+                src="https://www.pse.ngo/sites/default/files/2024-09/132.jpeg"
                 alt="Children smiling together"
                 className="h-full w-full object-cover"
               />
@@ -154,9 +154,9 @@ export default async function Home() {
             ].map((card) => (
               <article
                 key={card.title}
-                className="group rounded-sm border border-slate-100 bg-white p-8 text-center shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-slate-200/70"
+                className="group rounded-bl-[2.75rem] rounded-tr-2xl border border-slate-100 bg-white p-8 text-center shadow-sm transition duration-300 hover:-translate-y-2 hover:bg-white hover:shadow-xl hover:shadow-slate-200/70"
               >
-                <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 p-2 transition duration-300 group-hover:scale-110 group-hover:bg-emerald-200">
+                <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-bl-2xl rounded-tr-xl bg-emerald-100 p-2 transition duration-300 group-hover:scale-110 group-hover:bg-emerald-200">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={card.icon}
@@ -210,17 +210,17 @@ export default async function Home() {
           ) : (
             <ul className="mt-12 flex flex-wrap items-start justify-center gap-8 md:gap-10">
               {donorMembers.map((donor) => (
-                <li key={donor.id} className="flex w-28 flex-col items-center text-center">
+                <li key={donor.id} className="flex w-32 flex-col items-center text-center">
                   <div className="relative">
                     {donor.profileImage ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={donor.profileImage}
                         alt=""
-                        className="h-20 w-20 rounded-full border-4 border-white object-cover shadow-md ring-2 ring-emerald-100"
+                        className="h-24 w-24 rounded-bl-[2.5rem] rounded-tr-[1.2rem] border-4 border-white object-cover shadow-md ring-2 ring-emerald-100"
                       />
                     ) : (
-                      <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-white bg-emerald-100 text-2xl font-bold text-emerald-800 shadow-md ring-2 ring-emerald-100">
+                      <div className="flex h-24 w-24 items-center justify-center rounded-bl-[2.5rem] rounded-tr-[1.2rem] border-4 border-white bg-emerald-100 text-2xl font-bold text-emerald-800 shadow-md ring-2 ring-emerald-100">
                         {donor.name.slice(0, 1).toUpperCase()}
                       </div>
                     )}
@@ -232,6 +232,67 @@ export default async function Home() {
               ))}
             </ul>
           )}
+        </div>
+      </section>
+
+      {/* Our activity */}
+      <section className="border-t border-neutral-100 bg-white px-4 py-16 md:px-6 md:py-20">
+        <div className="mx-auto max-w-6xl">
+          <div className="text-center">
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-emerald-500">
+              Our activity
+            </p>
+            <h2 className="mt-3 font-[family-name:var(--font-display)] text-3xl font-bold text-slate-900 md:text-5xl">
+              How We Support Communities
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-slate-500">
+              We run monthly initiatives with members and volunteers, then publish transparent
+              updates for each activity.
+            </p>
+          </div>
+
+          <div className="mt-12 grid gap-6 md:grid-cols-3">
+            {[
+              {
+                title: "Food distribution day",
+                body: "Packed and delivered essential food kits to families in need with member volunteers.",
+                image:
+                  "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=900&q=80",
+              },
+              {
+                title: "School support drive",
+                body: "Provided learning supplies and support funds for students to continue education.",
+                image:
+                  "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=900&q=80",
+              },
+              {
+                title: "Community health outreach",
+                body: "Organized a local outreach program with hygiene kits and awareness materials.",
+                image:
+                  "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=900&q=80",
+              },
+            ].map((activity) => (
+              <article
+                key={activity.title}
+                className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
+              >
+                <div className="overflow-hidden rounded-bl-[4rem] rounded-tr-[1.25rem]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={activity.image}
+                    alt={activity.title}
+                    className="h-44 w-full object-cover transition duration-300 hover:scale-105"
+                  />
+                </div>
+                <div className="px-1 pb-2 pt-5">
+                  <h3 className="font-[family-name:var(--font-display)] text-2xl font-bold text-slate-900">
+                    {activity.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-500">{activity.body}</p>
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -249,13 +310,13 @@ export default async function Home() {
           <div className="flex flex-wrap justify-center gap-3">
             <Link
               href="/register"
-              className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-emerald-800 hover:bg-emerald-50"
+              className="rounded-bl-xl rounded-tr-lg bg-white px-6 py-3 text-sm font-semibold text-emerald-800 hover:bg-emerald-50"
             >
               Register
             </Link>
             <Link
               href="/login"
-              className="rounded-full border-2 border-white/80 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10"
+              className="rounded-bl-xl rounded-tr-lg border-2 border-white/80 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10"
             >
               Member login
             </Link>

@@ -26,3 +26,66 @@ export async function GET(req: Request) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 }
+
+export async function POST(req: Request) {
+  const token = getTokenFromCookieHeader(req.headers.get("cookie"));
+
+  if (!token) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  let payload;
+  try {
+    payload = verifyToken(token);
+  } catch {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (payload.role !== "MEMBER") {
+    return Response.json({ error: "Only members can submit donation requests." }, { status: 403 });
+  }
+
+  const { amount, note, paymentType, accountNumber, proofImageUrl } = await req.json();
+
+  if (
+    typeof amount !== "number" ||
+    typeof accountNumber !== "string" ||
+    typeof paymentType !== "string"
+  ) {
+    return Response.json(
+      {
+        error: "amount, paymentType, and accountNumber are required with valid types",
+      },
+      { status: 400 },
+    );
+  }
+
+  const allowedPaymentTypes = [
+    "CASH",
+    "BANK_TRANSFER",
+    "ABA",
+    "ACLEDA",
+    "WING",
+    "OTHER",
+  ] as const;
+
+  if (!allowedPaymentTypes.some((type) => type === paymentType)) {
+    return Response.json({ error: "Invalid paymentType" }, { status: 400 });
+  }
+  const normalizedPaymentType = paymentType as (typeof allowedPaymentTypes)[number];
+
+  const donation = await prisma.donation.create({
+    data: {
+      userId: payload.id,
+      amount,
+      status: "PENDING",
+      paymentType: normalizedPaymentType,
+      accountNumber: accountNumber.trim(),
+      proofImageUrl:
+        typeof proofImageUrl === "string" && proofImageUrl.trim() ? proofImageUrl.trim() : null,
+      note: typeof note === "string" && note.trim() ? note.trim() : null,
+    },
+  });
+
+  return Response.json(donation, { status: 201 });
+}

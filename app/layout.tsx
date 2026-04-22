@@ -18,8 +18,8 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "WMAD Donate",
-  description: "Donation workflow for admin and members",
+  title: "WMAD DONATE",
+  description: "Donation platform for WMAD",
 };
 
 export default function RootLayout({

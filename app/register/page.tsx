@@ -81,8 +81,8 @@ export default function RegisterPage() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-b from-emerald-50/40 to-neutral-50 px-6 py-10">
-      <div className="w-full max-w-md rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
+    <main className="flex min-h-screen items-center justify-center bg-white px-6 py-10">
+      <div className="w-full max-w-md rounded-bl-[2.75rem] rounded-tr-2xl border border-neutral-100 bg-white p-6 shadow-sm">
         <div className="mb-5">
           <BackToHomeLink variant="text" />
         </div>
@@ -155,7 +155,7 @@ export default function RegisterPage() {
 
           <button
             type="submit"
-            className="w-full rounded-full bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/25 transition hover:bg-emerald-700 disabled:opacity-60"
+            className="w-full rounded-bl-xl rounded-tr-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/25 transition hover:bg-emerald-700 disabled:opacity-60"
             disabled={loading}
           >
             {loading ? "Creating account..." : "Register"}

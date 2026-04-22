@@ -49,10 +49,26 @@ export default async function AdminPage() {
   });
 
   const recentDonationsRaw = await prisma.donation.findMany({
+    where: { status: "APPROVED" },
     orderBy: { createdAt: "desc" },
     include: {
       user: {
         select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
+  });
+
+  const pendingDonationRequestsRaw = await prisma.donation.findMany({
+    where: { status: "PENDING" },
+    orderBy: { createdAt: "asc" },
+    include: {
+      user: {
+        select: {
+          id: true,
           name: true,
           email: true,
         },
@@ -63,6 +79,7 @@ export default async function AdminPage() {
   const profileMap = await loadProfileImagesByUserIds([
     ...memberUsersBase.map((m) => m.id),
     ...recentDonationsRaw.map((d) => d.userId),
+    ...pendingDonationRequestsRaw.map((d) => d.userId),
   ]);
 
   const memberUsers = memberUsersBase.map((m) => ({
@@ -85,13 +102,29 @@ export default async function AdminPage() {
     },
   }));
 
+  const pendingDonations = pendingDonationRequestsRaw.map((donation) => ({
+    id: donation.id,
+    amount: donation.amount,
+    paymentType: donation.paymentType,
+    accountNumber: donation.accountNumber,
+    proofImageUrl: donation.proofImageUrl,
+    note: donation.note,
+    createdAt: donation.createdAt.toISOString(),
+    user: {
+      id: donation.user.id,
+      name: donation.user.name,
+      email: donation.user.email,
+      profileImage: profileMap.get(donation.user.id) ?? null,
+    },
+  }));
+
   return (
-    <main className="min-h-screen bg-gradient-to-b from-emerald-50/40 to-neutral-50">
-      <section className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-6">
+    <main className="min-h-screen bg-white">
+      <section className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-6">
         <div>
-          <p className="text-sm text-gray-500">Admin Portal</p>
-          <h1 className="text-2xl font-bold text-gray-900">Donation Management</h1>
-          <p className="text-sm text-gray-600">Approve users and record donation entries.</p>
+          <p className="text-sm text-slate-500">Admin Portal</p>
+          <h1 className="text-2xl font-bold text-slate-900">Donation Management</h1>
+          <p className="text-sm text-slate-600">Approve users and record donation entries.</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <BackToHomeLink />
@@ -100,6 +133,7 @@ export default async function AdminPage() {
       </section>
       <AdminWorkspace
         pendingUsers={pendingUsers}
+        pendingDonations={pendingDonations}
         memberUsers={memberUsers}
         recentDonations={recentDonations.map((donation) => ({
           id: donation.id,
